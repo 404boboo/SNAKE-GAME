@@ -13,6 +13,14 @@ Game::Game(int width, int height, float blockSize, float snakeSize) {
     this->snakeSize= snakeSize;
     gameOver = false; // will change this to true when game is over
 
+    // Initialize victim
+    VictimSprite c_victim(blockSize, width, height);
+    victim = c_victim;
+
+
+    // victim.setFillColor(sf::Color::Red);
+    genFood();
+
     // Initialize snake linked list
     snake = new VectorList();
     snake->vec = randPos();
@@ -63,14 +71,18 @@ void Game::move(GameDirection dir) {
     if(newPos.y > (height)+2) {
         newPos.y = -2;
     }
-
+    // Eat food
+    if (newPos.x == foodPos.x && newPos.y == foodPos.y) {
+            head->next = new VectorList();
+            head = head->next;
+            head->next = NULL;
+            head->vec = newPos;
+            genFood();
+        }
     // Just move and check overlaps
     else {
         VectorList *temp = snake;
         while (temp->next) {
-            // if (temp->vec == head->vec) {
-            //     gameOver = true;
-            // }
             temp->vec = temp->next->vec;
             temp = temp->next;
         }
@@ -110,6 +122,8 @@ void Game::draw(sf::RenderWindow* window, float state) {
         currentSnake.renderStomic(window, mul(temp->vec, blockSize)); 
         temp = temp->next;
     }
+    // Victim / Food
+        window->draw(victim);
 
 }
 
@@ -117,6 +131,10 @@ sf::Vector2f Game::randPos() {
     return sf::Vector2f(rand() % width, rand() % height);
 }
 
+void Game::genFood() {
+    foodPos = randPos();
+    victim.setSpritePosition(foodPos.x * blockSize, foodPos.y * blockSize, width, height);
+}
 
 sf::Vector2f Game::moveForwardTo(sf::Vector2f a, sf::Vector2f b) {
     if (a.x < b.x)
