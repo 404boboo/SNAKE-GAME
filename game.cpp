@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-Game::Game(int width, int height, float blockSize, float snakeSize) {
+Game::Game(int width, int height, float blockSize, float snakeSize, float initialSpeed) {
     srand(time(NULL));
 
     // Init vars
@@ -11,6 +11,7 @@ Game::Game(int width, int height, float blockSize, float snakeSize) {
     this->height = height;
     this->blockSize = blockSize;
     this->snakeSize= snakeSize;
+    this->snakeSpeed = initialSpeed;
     gameOver = false; // will change this to true when game is over
 
     // Initialize victim
@@ -77,12 +78,18 @@ void Game::move(GameDirection dir) {
             head = head->next;
             head->next = NULL;
             head->vec = newPos;
+            scoreCounter+=10; // increasing the score everytime the player eats a victim
+            if(scoreCounter % 5 == 0){ // checking if the score increased by 3 so we can increase the snake's speed everytime the score increases by 3
+              increaseSnakeSpeed();
+            }
             genFood();
         }
     // Just move and check overlaps
     else {
         VectorList *temp = snake;
         while (temp->next) {
+            if (temp->vec == head->vec)
+                gameOver = true;
             temp->vec = temp->next->vec;
             temp = temp->next;
         }
@@ -136,6 +143,14 @@ void Game::genFood() {
     victim.setSpritePosition(foodPos.x * blockSize, foodPos.y * blockSize, width, height);
 }
 
+void Game::increaseSnakeSpeed(){
+    this->snakeSpeed -= 10;
+}
+
+float Game::getSnakeSpeed(){
+    return this->snakeSpeed;
+}
+
 sf::Vector2f Game::moveForwardTo(sf::Vector2f a, sf::Vector2f b) {
     if (a.x < b.x)
         a.x += 1;
@@ -159,3 +174,5 @@ sf::Vector2f Game::lerp(sf::Vector2f a, sf::Vector2f b, float w) {
     a.y += (b.y - a.y) * w;
     return a;
 }
+
+

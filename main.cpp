@@ -9,7 +9,7 @@
 
 // Speed of snake
 // time (miliseconds) per block
-#define TPB 120.f
+#define TPB 180.f
 
 int main() {
     // Main window
@@ -17,7 +17,7 @@ int main() {
     window.setVerticalSyncEnabled(true);
     window.setActive(true);
     sf::Texture background;
-    background.loadFromFile("grass.jpg");
+    background.loadFromFile("image.png");
     background.setSmooth(true);
     background.setRepeated(true);
     sf::Sprite grassMap(background);
@@ -27,7 +27,7 @@ int main() {
     sf::Clock clock;
 
     // Game vars
-    Game game(WIDTH, HEIGHT, BLOCK_SIZE, SNAKE_SIZE);
+    Game game(WIDTH, HEIGHT, BLOCK_SIZE, SNAKE_SIZE, TPB);
     GameDirection dir = GameDirection::Stay;
     GameDirection dirCur = GameDirection::Stay;
 
@@ -56,7 +56,7 @@ int main() {
 
         // Get time
         int animationState = clock.getElapsedTime().asMilliseconds();
-        if (animationState >= TPB) {
+        if (animationState >= game.getSnakeSpeed()) {
             clock.restart();
             dirCur = dir;
             game.move(dirCur);
@@ -72,7 +72,7 @@ int main() {
             // Draw
             window.clear(sf::Color::Green);
             window.draw(grassMap); // background
-            game.draw(&window, (float)clock.getElapsedTime().asMilliseconds()/TPB);
+            game.draw(&window, (float)clock.getElapsedTime().asMilliseconds()/game.getSnakeSpeed());
             // game.draw(&window, TPB);
         }
 

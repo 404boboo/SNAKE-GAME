@@ -12,6 +12,8 @@ private:
     int width, height;
     float blockSize;
     float snakeSize;
+    float snakeSpeed; // for the speed pickup
+    int scoreCounter = 0;
     VectorList *snake;
     VectorList *head;
     // GameDirection currentDirection; // Will be used to identify direction
@@ -30,7 +32,9 @@ private:
     sf::Vector2f lerp(sf::Vector2f a, sf::Vector2f b, float w);
 public:
     bool gameOver;
-    Game(int width, int height, float blockSize, float snakeSize);
+    Game(int width, int height, float blockSize, float snakeSize, float initialSpeed);
     void move(GameDirection dir);
     void draw(sf::RenderWindow *window, float state);
+    void increaseSnakeSpeed();
+    float getSnakeSpeed();
 };
