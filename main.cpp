@@ -22,7 +22,7 @@ int main() {
     background.setRepeated(true);
     sf::Sprite grassMap(background);
     grassMap.setTextureRect({0, 0, WIDTH * BLOCK_SIZE, HEIGHT * BLOCK_SIZE});
-    grassMap.setScale(WIDTH * BLOCK_SIZE / background.getSize().x, HEIGHT * BLOCK_SIZE / background.getSize().y);
+    grassMap.setScale(1,1);
     // SFML Clock
     sf::Clock clock;
 

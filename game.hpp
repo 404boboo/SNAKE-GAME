@@ -1,6 +1,9 @@
 #include <SFML/Graphics.hpp>
 #include "Snake.hpp"
 #include "Victim.hpp"
+#include "Obstacle.hpp"
+#include "CollisionDetection.h"
+
 
 // Directions
 enum class GameDirection { Right, Left, Up, Down, Stay };
@@ -9,6 +12,7 @@ enum class GameDirection { Right, Left, Up, Down, Stay };
 class Game
 {
 private:
+    const int OBSTACLES_COUNT = 5;
     int width, height;
     float blockSize;
     float snakeSize;
@@ -22,8 +26,10 @@ private:
     sf::Vector2f prevTailPos;
     sf::Vector2f foodPos;
     VictimSprite victim;
-    
-    // Snake snakeShape;
+    VectorList *obstacles;
+    ObstacleList *obstacleList;
+    ObstacleSprite tempObstacle;
+    bool obstaclesExist = false;
 
     sf::Vector2f randPos();
     void genFood();

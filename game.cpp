@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+
 Game::Game(int width, int height, float blockSize, float snakeSize, float initialSpeed) {
     srand(time(NULL));
 
@@ -30,6 +31,26 @@ Game::Game(int width, int height, float blockSize, float snakeSize, float initia
     prevHeadPos = snake->vec;
     prevTailPos = snake->vec;
 
+    // Initialize and draw obstacles
+     int current = 0;
+     VectorList* tempObstacle = nullptr;
+     ObstacleList* cObstaclesList = nullptr;
+     ObstacleList* tempObstacleList = nullptr;
+     while(current < OBSTACLES_COUNT) {
+         obstacles = new VectorList();
+         cObstaclesList = new ObstacleList();
+         obstacles->vec = randPos();
+         obstacles->next = tempObstacle;
+         tempObstacle = obstacles;
+         ObstacleSprite obstacle(blockSize, width, height);
+         obstacle.setSpritePosition(obstacles->vec.x * blockSize, obstacles->vec.y * blockSize, width, height);
+         cObstaclesList->obstacle = obstacle;
+         cObstaclesList->next = tempObstacleList;
+         tempObstacleList = cObstaclesList;
+         current++;
+    }
+    obstacleList = cObstaclesList;
+
     
 
 }
@@ -54,13 +75,29 @@ void Game::move(GameDirection dir) {
         newPos.y += 1;
         break;
     }
+    ////////////////////// Check hitting obstacle Start ////////////////////
+    ObstacleList* tempPtr = obstacleList;
 
+    while(tempPtr != nullptr) {
+        ObstacleSprite obstacle = tempPtr->obstacle;
+
+        // std::cout << "X: " << newPos.x * blockSize << std::endl;
+        // Check collision
+        sf::Uint8* mask = Collision::createTextureAndBitmask(obstacle.sprite->getTexture(), obstacle.fileName);
+        if(Collision::pixelCollideVector(obstacle.sprite, mask, blockSize, newPos, 0)) {
+            gameOver = true;
+        }
+
+        tempPtr = tempPtr->next;
+    }
+
+    //////////////////////// Check hitting obstacle End ////////////////////
 
 
     if (newPos.x < -2) {
         newPos.x = (width)+2;
     }
-    
+
     if(newPos.x > (width)+2) {
         newPos.x = -2;
     }
@@ -72,6 +109,7 @@ void Game::move(GameDirection dir) {
     if(newPos.y > (height)+2) {
         newPos.y = -2;
     }
+
     // Eat food
     if (newPos.x == foodPos.x && newPos.y == foodPos.y) {
             head->next = new VectorList();
@@ -111,7 +149,7 @@ void Game::draw(sf::RenderWindow* window, float state) {
     Snake currentSnake(sf::Vector2f(snakeSize, snakeSize));
 
     // Animated head
-    currentSnake.renderHead(window, mul(lerp(prevHeadPos, head->vec, state), blockSize));
+    currentSnake.renderHead(window, mul(lerp(prevHeadPos, head->vec, state), snakeSize));
 
     // debugging position
 
@@ -120,18 +158,28 @@ void Game::draw(sf::RenderWindow* window, float state) {
     // std::cout << "x: " << std::to_string(x) << ", y: " << std::to_string(y) << std::endl;
 
     // // Animated tail
-    currentSnake.renderTail(window, mul(lerp(prevTailPos, snake->vec, state), blockSize));
+    currentSnake.renderTail(window, mul(lerp(prevTailPos, snake->vec, state), snakeSize));
 
     // Animated stomic
     VectorList *temp = snake;
     VectorList *prev = snake;
     while (temp->next) {
-        currentSnake.renderStomic(window, mul(temp->vec, blockSize)); 
+        currentSnake.renderStomic(window, mul(temp->vec, snakeSize));
         temp = temp->next;
     }
     // Victim / Food
         window->draw(victim);
-
+        VectorList* tempObstacles = obstacles;
+        // Loop through vector list of obstacles*
+        int obstacleCount = 0;
+        while(tempObstacles != nullptr) {
+            ObstacleSprite obstacle(snakeSize, width, height);
+            obstacle.setSpritePosition(tempObstacles->vec.x * snakeSize, tempObstacles->vec.y * snakeSize, width, height);
+            tempObstacle = obstacle;
+            window->draw(obstacle);
+            tempObstacles = tempObstacles->next;
+            obstacleCount++;
+        }
 }
 
 sf::Vector2f Game::randPos() {
@@ -140,8 +188,9 @@ sf::Vector2f Game::randPos() {
 
 void Game::genFood() {
     foodPos = randPos();
-    victim.setSpritePosition(foodPos.x * blockSize, foodPos.y * blockSize, width, height);
+    victim.setSpritePosition(foodPos.x * snakeSize, foodPos.y * snakeSize, width, height);
 }
+
 
 void Game::increaseSnakeSpeed(){
     this->snakeSpeed -= 10;
