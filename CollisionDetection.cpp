@@ -111,6 +111,9 @@ namespace Collision
            sf::IntRect spriteRect = sprite->getTextureRect();
 
            sf::Vector2f sv = sprite->getTransform().transformPoint(position.x*blockSize, (position.y*blockSize)-2);
+           if((sv.x > spriteRect.width || sv.y > spriteRect.height)){
+               return true;
+           }
            if (int(sv.x) >= 0 && int(sv.y) >= 0 && int(sv.x) < spriteRect.width && int(sv.y) < spriteRect.height) {
                    float pixel = (float) Bitmasks.GetPixel(spriteMask, sprite->getTexture(), (int) (sv.x)+(spriteRect.left), (int)(sv.y)+(spriteRect.top));
                    float pixelAlpha = (float) pixel/255;

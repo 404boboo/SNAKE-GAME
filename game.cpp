@@ -179,7 +179,7 @@ void Game::draw(sf::RenderWindow* window, float state) {
         // Loop through vector list of obstacles*
         int obstacleCount = 0;
         while(tempObstacles != nullptr) {
-            ObstacleSprite obstacle(snakeSize, width, height);
+            ObstacleSprite obstacle(blockSize, width, height);
             obstacle.setSpritePosition(tempObstacles->vec.x * blockSize, tempObstacles->vec.y * blockSize, width, height);
             tempObstacle = obstacle;
             window->draw(obstacle);

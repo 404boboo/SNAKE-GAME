@@ -82,10 +82,10 @@ int main() {
             {
 
         sf::RenderWindow window(sf::VideoMode(WIDTH * BLOCK_SIZE, HEIGHT * BLOCK_SIZE), "Snake Game");
-        window.setVerticalSyncEnabled(true);
+        //window.setVerticalSyncEnabled(true);
         window.setActive(true);
         sf::Texture background;
-        background.loadFromFile("image.png");
+        background.loadFromFile("playbackground.jpg");
         background.setSmooth(true);
         background.setRepeated(true);
         sf::Sprite grassMap(background);
@@ -201,13 +201,8 @@ int main() {
             }
     }
 
-            if (buttonNumber == 1)
-            {
-                // Exit
-
+            else    // Exit
                 mainWindow.close();
-
-            }
 
 
 
