@@ -42,5 +42,6 @@ public:
     void move(GameDirection dir);
     void draw(sf::RenderWindow *window, float state);
     void increaseSnakeSpeed();
+    int getScore();
     float getSnakeSpeed();
 };

@@ -1,5 +1,7 @@
 #include "game.hpp"
 #include "Main_menu.h"
+#include <iostream>
+#include <fstream>
 
 // Size of each block
 #define BLOCK_SIZE 50
@@ -132,11 +134,59 @@ int main() {
 
             // Game over
             if (game.gameOver) {
+
+                // SCORE AT THE END OF GAME
+                sf::Font font;
+                if (!font.loadFromFile("arial.ttf")){
+                    std::cout << "FONT NOT LOADDED" <<std::endl;
+                }
+                sf::Text score;
+                score.setFont(font);
+                score.setColor(sf::Color::Blue);
+                std::string scoreLabel = "SCORE: ";
+                scoreLabel += to_string(game.getScore());
+                score.setString(scoreLabel);
+                score.setCharacterSize(50);
+                score.setPosition(sf::Vector2f((WIDTH * BLOCK_SIZE) / 2.7 , (HEIGHT * BLOCK_SIZE) / 2.2));
+
+                // Checking if file is empty if the player was playing for the first time.
+                int scoreNumber;
+                ifstream read("highscore.txt");
+                if(!read) return 0;
+                bool isEmpty = read.peek() == EOF;
+                //
+                string line;
+                std::fstream checkScore;
+                checkScore.open("highscore.txt", std::ios::in | std::ios::out);
+                if (checkScore.is_open()) {
+                    if(isEmpty){ // if file empty then just add the lastest score
+                        checkScore << game.getScore();
+                    }
+                    else{ // if there's a score then write it to scoreNumber
+                        while(!checkScore.eof())
+                            checkScore >> scoreNumber;
+
+                    }
+                }
+                if(scoreNumber < game.getScore()){
+                    std::ofstream hscore("highscore.txt", std::ofstream::trunc);
+
+                       hscore << game.getScore();
+
+                       hscore.close();
+                }
+
+
+                // Draw game over screen
+
                 window.clear(sf::Color::Green);
                 window.draw(grassMap); // game over screen, for now it's just normal background -- to be updated
+                window.draw(score);
                 // window.close();
                 // break;
+
             } else {
+
                 // Draw
                 window.clear(sf::Color::Green);
                 window.draw(grassMap); // background

@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML\Graphics.hpp>
-
-#define Max_main_menu 2
+#include <fstream>
+#define Max_main_menu 3
 
 class Main_menu
 {
@@ -20,8 +20,12 @@ public:
 
     ~Main_menu();
 
+
 private:
     int mainMenuSelected;
+    std::fstream highScore;
+    int score;
+    std::string scoreLabel = "High Score: ";
     sf::Font font;
     sf::Text mainMenu[Max_main_menu];
 };

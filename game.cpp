@@ -111,13 +111,19 @@ void Game::move(GameDirection dir) {
     }
 
     // Eat food
+    bool HARD = false; // FOR MENU MODE
+    int mode = 5;
+    if (HARD){
+        mode = 3;
+    }
+
     if (newPos.x == foodPos.x && newPos.y == foodPos.y) {
             head->next = new VectorList();
             head = head->next;
             head->next = NULL;
             head->vec = newPos;
             scoreCounter+=10; // increasing the score everytime the player eats a victim
-            if(scoreCounter % 5 == 0){ // checking if the score increased by 3 so we can increase the snake's speed everytime the score increases by 3
+            if(scoreCounter % mode == 0){ // checking if the score increased by 3 so we can increase the snake's speed everytime the score increases by 3
               increaseSnakeSpeed();
             }
             genFood();
@@ -149,7 +155,7 @@ void Game::draw(sf::RenderWindow* window, float state) {
     Snake currentSnake(sf::Vector2f(snakeSize, snakeSize));
 
     // Animated head
-    currentSnake.renderHead(window, mul(lerp(prevHeadPos, head->vec, state), snakeSize));
+    currentSnake.renderHead(window, mul(lerp(prevHeadPos, head->vec, state), blockSize));
 
     // debugging position
 
@@ -158,13 +164,13 @@ void Game::draw(sf::RenderWindow* window, float state) {
     // std::cout << "x: " << std::to_string(x) << ", y: " << std::to_string(y) << std::endl;
 
     // // Animated tail
-    currentSnake.renderTail(window, mul(lerp(prevTailPos, snake->vec, state), snakeSize));
+    currentSnake.renderTail(window, mul(lerp(prevTailPos, snake->vec, state), blockSize));
 
     // Animated stomic
     VectorList *temp = snake;
     VectorList *prev = snake;
     while (temp->next) {
-        currentSnake.renderStomic(window, mul(temp->vec, snakeSize));
+        currentSnake.renderStomic(window, mul(temp->vec, blockSize));
         temp = temp->next;
     }
     // Victim / Food
@@ -174,7 +180,7 @@ void Game::draw(sf::RenderWindow* window, float state) {
         int obstacleCount = 0;
         while(tempObstacles != nullptr) {
             ObstacleSprite obstacle(snakeSize, width, height);
-            obstacle.setSpritePosition(tempObstacles->vec.x * snakeSize, tempObstacles->vec.y * snakeSize, width, height);
+            obstacle.setSpritePosition(tempObstacles->vec.x * blockSize, tempObstacles->vec.y * blockSize, width, height);
             tempObstacle = obstacle;
             window->draw(obstacle);
             tempObstacles = tempObstacles->next;
@@ -188,7 +194,7 @@ sf::Vector2f Game::randPos() {
 
 void Game::genFood() {
     foodPos = randPos();
-    victim.setSpritePosition(foodPos.x * snakeSize, foodPos.y * snakeSize, width, height);
+    victim.setSpritePosition(foodPos.x * blockSize, foodPos.y * blockSize, width, height);
 }
 
 
@@ -222,6 +228,10 @@ sf::Vector2f Game::lerp(sf::Vector2f a, sf::Vector2f b, float w) {
     a.x += (b.x - a.x) * w;
     a.y += (b.y - a.y) * w;
     return a;
+}
+
+int Game::getScore(){
+    return scoreCounter;
 }
 
 
