@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "Main_menu.h"
+#include "endMenu.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -60,11 +61,7 @@ int main() {
                                 mainWindow.close();
                                 buttonNumber = 1;
                             }
-                            if (menu.mainMenuPressed() == 2)
-                            {
-                                mainWindow.close();
-                                buttonNumber = 2;
-                            }
+
                         }
 
 
@@ -74,9 +71,11 @@ int main() {
                 mainWindow.clear();
                 mainWindow.draw(menubg);
                 menu.draw(mainWindow);
-
                 mainWindow.display();
+
+
             }
+
 
     if (buttonNumber == 0)  // buttonNumber 0 - PLAY
             {
@@ -135,22 +134,9 @@ int main() {
             // Game over
             if (game.gameOver) {
 
-                // SCORE AT THE END OF GAME
-                sf::Font font;
-                if (!font.loadFromFile("arial.ttf")){
-                    std::cout << "FONT NOT LOADDED" <<std::endl;
-                }
-                sf::Text score;
-                score.setFont(font);
-                score.setColor(sf::Color::Blue);
-                std::string scoreLabel = "SCORE: ";
-                scoreLabel += to_string(game.getScore());
-                score.setString(scoreLabel);
-                score.setCharacterSize(50);
-                score.setPosition(sf::Vector2f((WIDTH * BLOCK_SIZE) / 2.7 , (HEIGHT * BLOCK_SIZE) / 2.2));
-
                 // Checking if file is empty if the player was playing for the first time.
                 int scoreNumber;
+                int highScore;
                 ifstream read("highscore.txt");
                 if(!read) return 0;
                 bool isEmpty = read.peek() == EOF;
@@ -169,23 +155,83 @@ int main() {
                     }
                 }
                 if(scoreNumber < game.getScore()){
+                    highScore = game.getScore();
                     std::ofstream hscore("highscore.txt", std::ofstream::trunc);
 
                        hscore << game.getScore();
 
+
                        hscore.close();
+                }
+                else
+                    highScore = scoreNumber;
+
+                // SCORE AT THE END OF GAME
+
+                sf::Font font;
+                if (!font.loadFromFile("arial.ttf")){
+                    std::cout << "FONT NOT LOADDED" <<std::endl;
+                }
+                sf::Text score;
+                score.setFont(font);
+                score.setColor(sf::Color::Red);
+                std::string scoreLabel = "SCORE: ";
+                scoreLabel += to_string(game.getScore());
+                score.setString(scoreLabel);
+                score.setCharacterSize(50);
+                score.setPosition(sf::Vector2f((WIDTH * BLOCK_SIZE) / 2.7 , (HEIGHT * BLOCK_SIZE) / 2.2));
+
+                sf::Text highScoreLabel;
+                highScoreLabel.setFont(font);
+                highScoreLabel.setColor(sf::Color::Black);
+                std::string hscoreLabel = "High Score: ";
+                hscoreLabel += to_string(highScore);
+                highScoreLabel.setString(hscoreLabel);
+                highScoreLabel.setCharacterSize(50);
+                highScoreLabel.setPosition((WIDTH * BLOCK_SIZE) / 3.4 , (HEIGHT * BLOCK_SIZE) / 1.8);
+
+                End_menu endMenu(50, 370);
+
+                while (window.pollEvent(event))
+                {
+                    if (event.type == sf::Event::Closed)
+                        window.close();
+                    if (event.type == sf::Event::KeyReleased)
+                    {
+
+                        if (event.key.code == sf::Keyboard::Return) // enter
+                        {
+
+
+                            if (endMenu.endMenuPressed() == 0)
+                            {
+                                window.close();
+                                buttonNumber = 1;
+                            }
+                        }
+
+
+                    }
+
                 }
 
 
-                // Draw game over screen
+
+
+                // Draw gameover screen
 
                 window.clear(sf::Color::Green);
-                window.draw(grassMap); // game over screen, for now it's just normal background -- to be updated
+                window.draw(grassMap);
                 window.draw(score);
+                window.draw(highScoreLabel);
+                endMenu.draw(window);
+                window.display();
+
                 // window.close();
                 // break;
 
-            } else {
+            }
+            else {
 
                 // Draw
                 window.clear(sf::Color::Green);
@@ -203,8 +249,6 @@ int main() {
 
             else    // Exit
                 mainWindow.close();
-
-
 
 
     return 0;

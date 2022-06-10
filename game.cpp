@@ -111,11 +111,6 @@ void Game::move(GameDirection dir) {
     }
 
     // Eat food
-    bool HARD = false; // FOR MENU MODE
-    int mode = 5;
-    if (HARD){
-        mode = 3;
-    }
 
     if (newPos.x == foodPos.x && newPos.y == foodPos.y) {
             head->next = new VectorList();
@@ -123,7 +118,7 @@ void Game::move(GameDirection dir) {
             head->next = NULL;
             head->vec = newPos;
             scoreCounter+=10; // increasing the score everytime the player eats a victim
-            if(scoreCounter % mode == 0){ // checking if the score increased by 3 so we can increase the snake's speed everytime the score increases by 3
+            if(scoreCounter % 5 == 0){ // checking if the score increased by 3 so we can increase the snake's speed everytime the score increases by 3
               increaseSnakeSpeed();
             }
             genFood();
