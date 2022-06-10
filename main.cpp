@@ -138,7 +138,11 @@ int main() {
                 int scoreNumber;
                 int highScore;
                 ifstream read("highscore.txt");
-                if(!read) return 0;
+                if(!read){
+                    std::ofstream outfile ("highscore.txt");
+
+                    outfile.close();
+                };
                 bool isEmpty = read.peek() == EOF;
                 //
                 string line;
